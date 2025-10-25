@@ -28,3 +28,6 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Personal notes
+TODO.md
