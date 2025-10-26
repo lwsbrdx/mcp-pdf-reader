@@ -32,6 +32,18 @@ make build
 go build -o pdf-server main.go
 ```
 
+### Using Docker
+
+```bash
+# Build the Docker image
+docker build -t mcp-pdf-reader:latest .
+
+# Run with Docker (interactive mode for testing)
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize",...}' | docker run --rm -i mcp-pdf-reader:latest
+```
+
+The Docker image is optimized using multi-stage builds and weighs only ~20MB.
+
 ## Usage
 
 ### With Claude Code
@@ -134,7 +146,7 @@ mcp-pdf-reader/
 - [ ] Caching mechanism for remote PDFs
 
 ### Phase 4: Performance & Deployment
-- [ ] Docker image for easy deployment
+- [x] Docker image for easy deployment
 - [ ] Performance benchmarks
 - [ ] Memory optimization for large PDFs
 - [ ] Streaming support for very large files
@@ -145,9 +157,35 @@ mcp-pdf-reader/
 - [ ] PDF structure analysis (TOC, bookmarks)
 - [ ] OCR support for scanned PDFs
 
-## Docker Support *(Planned)*
+## Docker Support
 
-Docker image and usage instructions coming soon.
+### Building the image
+
+```bash
+docker build -t mcp-pdf-reader:latest .
+```
+
+### Configuration with Claude Code
+
+To use the Docker image with Claude Code, update your MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "pdf-reader": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "mcp-pdf-reader:latest"]
+    }
+  }
+}
+```
+
+### Image details
+
+- **Base image**: Alpine Linux (minimal, secure)
+- **Size**: ~20MB (multi-stage build)
+- **User**: Runs as non-root user `mcp` (UID 1000)
+- **Transport**: stdio (standard input/output)
 
 ## Benchmarks *(Planned)*
 
