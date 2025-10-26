@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+LICENSE
+
+# Binaries
+pdf-server
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test files
+*_test.go
+samples/
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Temporary
+tmp/
+temp/
