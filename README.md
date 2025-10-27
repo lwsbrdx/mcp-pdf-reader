@@ -2,14 +2,16 @@
 
 > ⚠️ **Work in Progress**: This project is under active development. Features and APIs may change.
 
-A Model Context Protocol (MCP) server in Go for reading and extracting text from PDF files. This server enables AI assistants like Claude to read and analyze PDF documents.
+A Model Context Protocol (MCP) server in Go for reading and extracting text from PDF files. This server enables AI assistants like Claude to read and analyze PDF documents with high-quality text extraction powered by Google's PDFium library.
 
 ## Features
 
+- ✅ **High-quality text extraction** from PDF files using PDFium (Google Chrome's PDF engine)
 - ✅ Read full text content from PDF files
 - ✅ Search for text in PDF files with context and page numbers
 - ✅ Case-sensitive and case-insensitive search options
 - ✅ Configurable context length around matches
+- ✅ No CGO dependencies (uses WebAssembly)
 - 🔄 Read text content from specific pages or page ranges *(planned)*
 - 🔄 Read PDF metadata (author, title, creation date, etc.) *(planned)*
 - 🔄 Get the total page count of a PDF *(planned)*
@@ -19,7 +21,7 @@ A Model Context Protocol (MCP) server in Go for reading and extracting text from
 
 ### Prerequisites
 
-- Go 1.21 or higher
+- Go 1.25 or higher
 - Git
 
 ### Build from source
@@ -45,7 +47,7 @@ docker build -t mcp-pdf-reader:latest .
 echo '{"jsonrpc":"2.0","id":1,"method":"initialize",...}' | docker run --rm -i mcp-pdf-reader:latest
 ```
 
-The Docker image is optimized using multi-stage builds and weighs only ~20MB.
+The Docker image is optimized using multi-stage builds and weighs only ~35MB (includes embedded PDFium WebAssembly binary).
 
 ## Usage
 
@@ -166,22 +168,23 @@ go test ./internal -v
 
 ```
 mcp-pdf-reader/
-├── main.go              # MCP server entry point
-├── handlers/            # MCP tool handlers
-│   └── read_handler.go  # Handler for read_pdf tool
-├── internal/            # Internal packages
-│   ├── pdf.go          # PDF reading logic
-│   └── pdf_test.go     # Tests
-├── samples/            # Sample PDF files for testing
-└── TODO.md            # Project guide and documentation
+├── main.go                 # MCP server entry point
+├── handlers/               # MCP tool handlers
+│   ├── read_handler.go    # Handler for read_pdf tool
+│   └── search_handler.go  # Handler for search_in_pdf tool
+├── internal/               # Internal packages
+│   ├── pdf.go             # PDF reading logic with PDFium
+│   └── pdf_test.go        # Unit tests
+└── samples/               # Sample PDF files for testing
 ```
 
 ## Roadmap
 
-### Phase 1: Core Features (Current)
-- [x] Basic PDF text extraction
+### Phase 1: Core Features ✅
+- [x] High-quality PDF text extraction with PDFium
 - [x] MCP server implementation
 - [x] Single file reading support
+- [x] Text search with context
 - [ ] Error handling improvements
 
 ### Phase 2: Advanced Reading
@@ -233,9 +236,10 @@ To use the Docker image with Claude Code, update your MCP configuration:
 ### Image details
 
 - **Base image**: Alpine Linux (minimal, secure)
-- **Size**: ~20MB (multi-stage build)
+- **Size**: ~35MB (multi-stage build with embedded PDFium WebAssembly)
 - **User**: Runs as non-root user `mcp` (UID 1000)
 - **Transport**: stdio (standard input/output)
+- **No CGO**: Uses WebAssembly for cross-platform compatibility
 
 ## Benchmarks *(Planned)*
 
@@ -252,7 +256,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Acknowledgments
 
 - Built with [modelcontextprotocol/go-sdk](https://github.com/modelcontextprotocol/go-sdk)
-- PDF parsing using [ledongthuc/pdf](https://github.com/ledongthuc/pdf) and [pdfcpu](https://github.com/pdfcpu/pdfcpu)
+- PDF text extraction powered by [go-pdfium](https://github.com/klippa-app/go-pdfium) (Go bindings for Google's PDFium library)
+- Uses WebAssembly for cross-platform compatibility without CGO dependencies
 
 ## Related Projects
 
