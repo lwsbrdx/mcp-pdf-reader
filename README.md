@@ -7,6 +7,9 @@ A Model Context Protocol (MCP) server in Go for reading and extracting text from
 ## Features
 
 - ✅ Read full text content from PDF files
+- ✅ Search for text in PDF files with context and page numbers
+- ✅ Case-sensitive and case-insensitive search options
+- ✅ Configurable context length around matches
 - 🔄 Read text content from specific pages or page ranges *(planned)*
 - 🔄 Read PDF metadata (author, title, creation date, etc.) *(planned)*
 - 🔄 Get the total page count of a PDF *(planned)*
@@ -97,6 +100,53 @@ Reads the full text content from a PDF file.
 }
 ```
 
+### `search_in_pdf`
+
+Searches for specific text in a PDF file and returns all matches with page numbers and surrounding context.
+
+**Parameters:**
+- `path` (string, required): Path to the PDF file
+- `query` (string, required): Text to search for
+- `page` (number, optional): Specific page number to search in (searches all pages if not provided)
+- `case_sensitive` (boolean, optional): Whether to perform case-sensitive search (default: false)
+- `context_length` (number, optional): Number of characters of context around each match (default: 50)
+
+**Returns:**
+- `matches` (array): List of matches found
+  - `page` (number): Page number where the match was found
+  - `context` (string): Text surrounding the match
+  - `match_start` (number): Start position of the match in the context
+  - `match_end` (number): End position of the match in the context
+- `total_count` (number): Total number of matches found
+
+**Example usage:**
+```json
+{
+  "name": "search_in_pdf",
+  "arguments": {
+    "path": "/path/to/document.pdf",
+    "query": "machine learning",
+    "case_sensitive": false,
+    "context_length": 80
+  }
+}
+```
+
+**Example response:**
+```json
+{
+  "matches": [
+    {
+      "page": 5,
+      "context": "...the implementation of machine learning algorithms has revolutionized...",
+      "match_start": 25,
+      "match_end": 42
+    }
+  ],
+  "total_count": 1
+}
+```
+
 ## Development
 
 ### Running tests
@@ -152,7 +202,7 @@ mcp-pdf-reader/
 - [ ] Streaming support for very large files
 
 ### Phase 5: Additional Features
-- [ ] Search text within PDFs
+- [x] Search text within PDFs
 - [ ] Extract images from PDFs
 - [ ] PDF structure analysis (TOC, bookmarks)
 - [ ] OCR support for scanned PDFs
